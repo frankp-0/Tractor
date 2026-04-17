@@ -117,6 +117,16 @@ extract_model_info <- function(model, coef_rownames, LA_rownames, G_rownames) {
   Gstderr   <- as.numeric(reg_res[G_rownames, 2])
   Gtval     <- as.numeric(reg_res[G_rownames, 3])
   Gpval     <- as.numeric(reg_res[G_rownames, 4])
+
+  G_rownames_nona <- intersect(G_rownames, row.names(coefs))
+  if (length(G_rownames_nona) > 0) {
+    linear_test <- linearHypothesis(model, paste0(G_rownames_nona, " = 0"), singular.ok = TRUE, test = "Chisq")
+    Gpval_overall <- linear_test$`Pr(>Chisq)`[2]
+    Gdf_overall <- linear_test$Df[2]
+  } else {
+    Gpval_overall <- NA
+    Gdf_overall <- 0
+  }
   
   N         <- sum(complete.cases(model$model))
   
@@ -339,6 +349,8 @@ RunTractor <- function(prefix, phenofile, sampleidcol, phenocol, covarcollist, c
                             Gstderr = extracted_info$Gstderr
                             Gtval  = extracted_info$Gtval
                             Gpval  = extracted_info$Gpval
+                            Gpval_overall  = extracted_info$Gpval_overall
+                            Gdf_overall  = extracted_info$Gdf_overall
                             N      = extracted_info$N
                           } else if (method == "logistic") {
                             if (!is.null(COV_)){
@@ -355,6 +367,8 @@ RunTractor <- function(prefix, phenofile, sampleidcol, phenocol, covarcollist, c
                               Gstderr = extracted_info$Gstderr
                               Gtval  = extracted_info$Gtval
                               Gpval  = extracted_info$Gpval
+                              Gpval_overall  = extracted_info$Gpval_overall
+                              Gdf_overall  = extracted_info$Gdf_overall
                               N      = extracted_info$N
                             } else {
                               # if glm doesn't converge, set effect size and P value as NA
@@ -364,6 +378,8 @@ RunTractor <- function(prefix, phenofile, sampleidcol, phenocol, covarcollist, c
                               Gstderr   = rep(NA, length(G_rownames))
                               Gtval     = rep(NA, length(G_rownames))
                               Gpval     = rep(NA, length(G_rownames))
+                              Gpval_overall  = NA
+                              Gdf_overall  = NA
                               N         = sum(complete.cases(model$model))
                             }
                           }
@@ -373,6 +389,8 @@ RunTractor <- function(prefix, phenofile, sampleidcol, phenocol, covarcollist, c
                                                     ID  = data[[1]][[i,3]],
                                                     REF = data[[1]][[i,4]],
                                                     ALT = data[[1]][[i,5]],
+                                                    pval_overall = Gpval_overall,
+                                                    df_overall = Gdf_overall,
                                                     N   = N)
                           for (ancid in 0:(nAnc-1)) {
                             temp_result[[paste0("AF_anc",ancid)]]         <- round(AF[ancid+1],6)
