@@ -138,6 +138,8 @@ extract_model_info <- function(model, coef_rownames, LA_rownames, G_rownames) {
     Gstderr = Gstderr,
     Gtval  = Gtval,
     Gpval  = Gpval,
+    Gpval_overall = Gpval_overall,
+    Gdf_overall = Gdf_overall,
     N      = N
   ))
 }
