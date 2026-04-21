@@ -25,6 +25,7 @@ suppressMessages(library(data.table))
 suppressWarnings(suppressMessages(library(R.utils)))
 suppressMessages(library(dplyr))
 suppressMessages(library(doParallel))
+suppressMessages(library(car))
 
 option_list = list(
   make_option(c("--hapdose"), type="character", default=NULL, metavar="character",
