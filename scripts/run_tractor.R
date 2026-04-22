@@ -121,7 +121,7 @@ extract_model_info <- function(model, coef_rownames, LA_rownames, G_rownames) {
 
   G_rownames_nona <- intersect(G_rownames, row.names(coefs))
   if (length(G_rownames_nona) > 0) {
-    linear_test <- linearHypothesis(model, paste0(G_rownames_nona, " = 0"), singular.ok = TRUE, test = "Chisq")
+    linear_test <- car::linearHypothesis(model, paste0(G_rownames_nona, " = 0"), singular.ok = TRUE, test = "Chisq")
     Gpval_overall <- linear_test$`Pr(>Chisq)`[2]
     Gdf_overall <- linear_test$Df[2]
   } else {
